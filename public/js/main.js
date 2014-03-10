@@ -1,11 +1,6 @@
 'use strict';
 
 var sendChannel;
-var sendButton = document.getElementById("sendButton");
-var sendTextarea = document.getElementById("dataChannelSend");
-var receiveTextarea = document.getElementById("dataChannelReceive");
-
-sendButton.onclick = sendData;
 
 var isChannelReady = false;
 var isInitiator = true;
@@ -192,32 +187,6 @@ function createPeerConnection() {
   }
 }
 
-function sendData() {
-  var data = sendTextarea.value;
-  sendChannel.send(data);
-  trace('Sent data: ' + data);
-}
-
-// function closeDataChannels() {
-//   trace('Closing data channels');
-//   sendChannel.close();
-//   trace('Closed data channel with label: ' + sendChannel.label);
-//   receiveChannel.close();
-//   trace('Closed data channel with label: ' + receiveChannel.label);
-//   localPeerConnection.close();
-//   remotePeerConnection.close();
-//   localPeerConnection = null;
-//   remotePeerConnection = null;
-//   trace('Closed peer connections');
-//   startButton.disabled = false;
-//   sendButton.disabled = true;
-//   closeButton.disabled = true;
-//   dataChannelSend.value = "";
-//   dataChannelReceive.value = "";
-//   dataChannelSend.disabled = true;
-//   dataChannelSend.placeholder = "Press Start, enter some text, then press Send.";
-// }
-
 function gotReceiveChannel(event) {
   trace('Receive Channel Callback');
   sendChannel = event.channel;
@@ -241,18 +210,6 @@ function handleReceiveChannelStateChange() {
   var readyState = sendChannel.readyState;
   trace('Receive channel state is: ' + readyState);
   enableMessageInterface(readyState == "open");
-}
-
-function enableMessageInterface(shouldEnable) {
-  if (shouldEnable) {
-    dataChannelSend.disabled = false;
-    dataChannelSend.focus();
-    dataChannelSend.placeholder = "";
-    sendButton.disabled = false;
-  } else {
-    dataChannelSend.disabled = true;
-    sendButton.disabled = true;
-  }
 }
 
 function handleIceCandidate(event) {

@@ -1,11 +1,6 @@
 'use strict';
 
 var sendChannel;
-var sendButton = document.getElementById("sendButton");
-var sendTextarea = document.getElementById("dataChannelSend");
-var receiveTextarea = document.getElementById("dataChannelReceive");
-
-sendButton.onclick = sendData;
 
 var isChannelReady = false;
 var isInitiator = false;
@@ -172,12 +167,6 @@ function createPeerConnection() {
   }
 }
 
-function sendData() {
-  var data = sendTextarea.value;
-  sendChannel.send(data);
-  trace('Sent data: ' + data);
-}
-
 function gotReceiveChannel(event) {
   trace('Receive Channel Callback');
   sendChannel = event.channel;
@@ -201,18 +190,6 @@ function handleReceiveChannelStateChange() {
   var readyState = sendChannel.readyState;
   trace('Receive channel state is: ' + readyState);
   enableMessageInterface(readyState == "open");
-}
-
-function enableMessageInterface(shouldEnable) {
-  if (shouldEnable) {
-    dataChannelSend.disabled = false;
-    dataChannelSend.focus();
-    dataChannelSend.placeholder = "";
-    sendButton.disabled = false;
-  } else {
-    dataChannelSend.disabled = true;
-    sendButton.disabled = true;
-  }
 }
 
 function handleIceCandidate(event) {
