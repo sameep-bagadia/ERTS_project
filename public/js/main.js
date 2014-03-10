@@ -7,13 +7,13 @@ var receiveTextarea = document.getElementById("dataChannelReceive");
 
 sendButton.onclick = sendData;
 
-var isChannelReady;
-var isInitiator;
-var isStarted;
-var localStream;
-var pc;
-var remoteStream;
-var turnReady;
+var isChannelReady = false;
+var isInitiator = true;
+var isStarted = false;
+var localStream = null;
+var pc = null;
+var remoteStream = null;
+var turnReady = null;
 
 var pc_config = webrtcDetectedBrowser === 'firefox' ?
   {'iceServers':[{'url':'stun:23.21.150.121'}]} : // number IP
@@ -44,7 +44,7 @@ if (room !== '') {
 
 socket.on('created', function (room){
   console.log('Created room ' + room);
-  isInitiator = true;
+  // isInitiator = true;
 });
 
 socket.on('full', function (room){
@@ -54,7 +54,6 @@ socket.on('full', function (room){
 socket.on('join', function (room){
   console.log('Another peer made a request to join room ' + room);
   console.log('This peer is the initiator of room ' + room + '!');
-  isChannelReady = true;
 });
 
 socket.on('joined', function (room){
@@ -363,15 +362,37 @@ function hangup() {
 function handleRemoteHangup() {
   console.log('Session terminated.');
   stop();
-  isInitiator = false;
 }
 
 function stop() {
   isStarted = false;
   // isAudioMuted = false;
   // isVideoMuted = false;
-  pc.close();
-  pc = null;
+  try {
+    pc.close();
+  } catch (e) {
+
+  }
+
+  try {
+    localStream.stop();
+  } catch (e) {
+
+  }
+
+  try {
+    remoteStream.stop();
+  } catch (e) {
+
+  }
+
+  localVideo.src = '';
+  remoteVideo.src = '';
+  isStarted = false;
+  localStream = undefined;
+  pc = undefined;
+  turnReady = undefined;
+  remoteStream = undefined;
 }
 
 ///////////////////////////////////////////

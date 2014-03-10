@@ -7,13 +7,13 @@ var receiveTextarea = document.getElementById("dataChannelReceive");
 
 sendButton.onclick = sendData;
 
-var isChannelReady;
-var isInitiator;
-var isStarted;
-var localStream;
-var pc;
-var remoteStream;
-var turnReady;
+var isChannelReady = false;
+var isInitiator = false;
+var isStarted = false;
+var localStream = null;
+var pc = null;
+var remoteStream = null;
+var turnReady = false;
 
 var pc_config = webrtcDetectedBrowser === 'firefox' ?
   {'iceServers':[{'url':'stun:23.21.150.121'}]} : // number IP
@@ -44,9 +44,11 @@ if (room !== '') {
 
 socket.on('created', function (room){
   console.log('Created room ' + room);
-  isInitiator = true;
+  // Never the initiator
+  // isInitiator = true;
 });
 
+// TODO:
 socket.on('full', function (room){
   console.log('Room ' + room + ' is full');
 });
@@ -54,12 +56,10 @@ socket.on('full', function (room){
 socket.on('join', function (room){
   console.log('Another peer made a request to join room ' + room);
   console.log('This peer is the initiator of room ' + room + '!');
-  isChannelReady = true;
 });
 
 socket.on('joined', function (room){
   console.log('This peer has joined room ' + room);
-  isChannelReady = true;
 });
 
 socket.on('log', function (array){
@@ -69,13 +69,14 @@ socket.on('log', function (array){
 ////////////////////////////////////////////////
 
 function sendMessage(message){
-    console.log('Sending message: ', message);
+  console.log('Sending message: ', message);
   socket.emit('message', message);
 }
 
 socket.on('message', function (message){
   console.log('Received message:', message);
   if (message === 'got user media') {
+    isChannelReady = true;
     maybeStart();
   } else if (message.type === 'offer') {
     if (!isInitiator && !isStarted) {
@@ -176,26 +177,6 @@ function sendData() {
   sendChannel.send(data);
   trace('Sent data: ' + data);
 }
-
-// function closeDataChannels() {
-//   trace('Closing data channels');
-//   sendChannel.close();
-//   trace('Closed data channel with label: ' + sendChannel.label);
-//   receiveChannel.close();
-//   trace('Closed data channel with label: ' + receiveChannel.label);
-//   localPeerConnection.close();
-//   remotePeerConnection.close();
-//   localPeerConnection = null;
-//   remotePeerConnection = null;
-//   trace('Closed peer connections');
-//   startButton.disabled = false;
-//   sendButton.disabled = true;
-//   closeButton.disabled = true;
-//   dataChannelSend.value = "";
-//   dataChannelReceive.value = "";
-//   dataChannelSend.disabled = true;
-//   dataChannelSend.placeholder = "Press Start, enter some text, then press Send.";
-// }
 
 function gotReceiveChannel(event) {
   trace('Receive Channel Callback');
@@ -328,6 +309,7 @@ function handleRemoteStreamAdded(event) {
   remoteStream = event.stream;
 //  waitForRemoteVideo();
 }
+
 function handleRemoteStreamRemoved(event) {
   console.log('Remote stream removed. Event: ', event);
 }
@@ -341,15 +323,27 @@ function hangup() {
 function handleRemoteHangup() {
   console.log('Session terminated.');
   stop();
-  isInitiator = false;
 }
 
 function stop() {
   isStarted = false;
   // isAudioMuted = false;
   // isVideoMuted = false;
-  pc.close();
+  try {
+    pc.close();
+  } catch (e) {
+
+  }
+
+  try {
+    remoteStream.close();
+  } catch (e) {
+
+  }
+
+  remoteStream = null;
   pc = null;
+  remoteVideo.src = '';
 }
 
 ///////////////////////////////////////////
