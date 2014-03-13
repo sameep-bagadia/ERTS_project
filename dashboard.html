@@ -33,15 +33,52 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Request from Bot</h3>
+                    <div class="list-group" id="botrequest">
+
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
     <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src='/socket.io/socket.io.js'></script>
     <script type='text/javascript'>
 
 var NUM_BOTS = 2;
 for (var i=0; i<NUM_BOTS; i++) {
     $('#botoperators').append($('<a href="/op/b' + i + '" class="list-group-item">Bot ' + i + '</a>'));
 }
+
+var socket = io.connect();
+var room = 'h0';
+
+if (room !== '') {
+  console.log('Create or join room', room);
+  socket.emit('create or join', room);
+}
+
+function sendMessage(message){
+    console.log('Sending message: ', message);
+    socket.emit('message', message);
+}
+
+function showPing(bot) {
+    var elem = $('<a class="list-group-item">' + bot + '</a>');
+    $('#botrequest').append(elem);
+    setTimeout(function(){
+        elem.remove();
+    }, 30000);
+}
+
+socket.on('message', function (message){
+  if (message.type === 'ping') {
+    showPing(message.bot);
+  }
+});
+
 
     </script>
 </html>

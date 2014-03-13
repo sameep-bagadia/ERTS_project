@@ -63,7 +63,7 @@ socket.on('log', function (array){
 ////////////////////////////////////////////////
 
 function sendMessage(message){
-    console.log('Sending message: ', message);
+  console.log('Sending message: ', message);
   socket.emit('message', message);
 }
 
@@ -87,6 +87,28 @@ socket.on('message', function (message){
     handleRemoteHangup();
   }
 });
+
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    switch (evt.keyCode) {
+        case 37:
+            // left
+            sendMessage({'type': 'directions', 'direction': 'left'});
+            break;
+        case 38:
+            // up
+            sendMessage({'type': 'directions', 'direction': 'up'});
+            break;
+        case 39:
+            // right
+            sendMessage({'type': 'directions', 'direction': 'right'});
+            break;
+        case 40:
+            // down
+            sendMessage({'type': 'directions', 'direction': 'down'});
+            break;
+    }
+};
 
 ////////////////////////////////////////////////////
 
