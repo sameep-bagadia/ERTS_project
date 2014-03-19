@@ -2,9 +2,12 @@ import serial
 import time
 from socketIO_client import SocketIO
 
-ser = serial.Serial(19)
-#x = ser.read(3)
-#print x
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+ser = serial.Serial('/dev/tty.usbserial-AH001BS6')
+x = ser.read(3)
+print x
 
 """
 In each iteration:
@@ -28,21 +31,28 @@ def write_remote(str):
     return
 
 def on_directions(*args):
-    # type directions
+    print "Hello host"
     print 'on_directions', args
 
 print "rblah"
-socketIO = SocketIO('10.129.28.16', 8080)
+SERVER_IP = 'https://10.129.26.35'
+socketH = SocketIO(SERVER_IP, 8080, verify=False)
+socketB = SocketIO(SERVER_IP, 8080, verify=False)
 print "rt"
-socketIO.on('message', on_directions)
-# socketIO.wait(seconds=1)
+socketH.emit('create or join', 'h0')
+socketB.emit('create or join', 'b0')
+
+# socketH.on('dir_response', on_directions)
+socketB.on('dir_response', on_directions)
 
 while True:
-    #button_pressed = ser.read(1)
-    #if (button_pressed == "1"):
+    button_pressed = ser.read(1)
+    # print button_pressed
+    if (button_pressed == "1"):
+        print "Button pressed\n"
         # socketIO.emit('
-    socketIO.emit('message', {'type': 'ping', 'bot': 'b0'})
-    print "Button pressed\n"
+        socketB.emit('message', {'type': 'ping', 'bot': 'b0'})
+    
     
 ##    positions = process_video()
 ##    direction = read_remote()
