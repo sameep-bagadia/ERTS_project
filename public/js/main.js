@@ -67,6 +67,11 @@ function sendMessage(message){
   socket.emit('message', message);
 }
 
+function sendDir(message){
+  console.log('Sending message: ', message);
+  socket.emit('dir', message);
+}
+
 socket.on('message', function (message){
   console.log('Received message:', message);
   if (message === 'got user media') {
@@ -93,19 +98,19 @@ document.onkeydown = function(evt) {
     switch (evt.keyCode) {
         case 37:
             // left
-            sendMessage({'type': 'directions', 'direction': 'left'});
+            sendDir({'type': 'directions', 'direction': 'left'});
             break;
         case 38:
             // up
-            sendMessage({'type': 'directions', 'direction': 'up'});
+            sendDir({'type': 'directions', 'direction': 'up'});
             break;
         case 39:
             // right
-            sendMessage({'type': 'directions', 'direction': 'right'});
+            sendDir({'type': 'directions', 'direction': 'right'});
             break;
         case 40:
             // down
-            sendMessage({'type': 'directions', 'direction': 'down'});
+            sendDir({'type': 'directions', 'direction': 'down'});
             break;
     }
 };

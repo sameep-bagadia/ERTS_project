@@ -52,6 +52,11 @@ io.sockets.on('connection', function (socket){
 		socket.broadcast.to(data.room).emit('message', data); // should be room only
 	});
 
+    socket.on('dir', function (data) {
+        log('Got message: ', data);
+        socket.broadcast.emit('dir', data); // should be room only
+    });
+
 	socket.on('create or join', function (room) {
 		var numClients = io.sockets.clients(room).length;
 

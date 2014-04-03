@@ -74,6 +74,7 @@ function showPing(bot) {
 }
 
 socket.on('message', function (message){
+  console.log(message);
   if (message.type === 'ping') {
     showPing(message.bot);
   }
