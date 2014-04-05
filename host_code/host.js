@@ -2,23 +2,26 @@
 // https://github.com/voodootikigod/node-serialport
 
 var SerialPort = require("serialport").SerialPort;
-var serialPort = new SerialPort("/dev/tty-usbserial1", /*{ baudrate: 57600 },*/ false); // this is the openImmediately flag [default is true]
-var socket = require('socket.io-client')('https://10.129.26.35:8000');
+var serialPort = new SerialPort("/dev/tty.usbserial-AH001BS6", /*{ baudrate: 57600 },*/ false); // this is the openImmediately flag [default is true]
 
-serialPort.open(function () {
-    serialPort.on('data', function(data) {
-        console.log('data received: ' + data);
-    });
+var clientio  = require('socket.io-client');         // this is the socket.io client
+var socket = clientio.connect('https://192.168.0.100', {port: 8080, secure: true}); 
 
-    serialPort.write("ls\n", function(err, results) {
-        console.log('err ' + err);
-        console.log('results ' + results);
-    });
-});
+// serialPort.open(function () {
+//    serialPort.on('data', function(data) {
+//        console.log('data received: ' + data);
+//    });
+//    serialPort.write("ls\n", function(err, results) {
+//        console.log('err ' + err);
+//        console.log('results ' + results);
+//    });
+// });
 
 socket.on('connect', function(){
+	console.log('connected');
+	
     socket.on('dir', function(data){
-
+		console.log(data);
     });
 
     socket.on('disconnect', function(){
