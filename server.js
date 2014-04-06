@@ -9,7 +9,8 @@ var express = require('express')
 	}
   , http = require('http').createServer(httpapp)
   , server = require('https').createServer(options, app)
-  , io = require('socket.io').listen(server);
+  , io = require('socket.io').listen(server)
+  , io2 = require('socket.io').listen(http);
 
 httpapp.get('*',function(req,res){
     res.redirect('https://127.0.0.1:8080'+req.url)
@@ -38,12 +39,11 @@ http.listen(8081);
 
 // var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket){
-
 	function log(){
 		var array = [">>> "];
-	  for (var i = 0; i < arguments.length; i++) {
-	  	array.push(arguments[i]);
-	  }
+	    for (var i = 0; i < arguments.length; i++) {
+	  	    array.push(arguments[i]);
+	    }
 	    socket.emit('log', array);
 	}
 
@@ -75,8 +75,19 @@ io.sockets.on('connection', function (socket){
 		}
 		socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
 		socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
-
 	});
-
 });
 
+// io2.sockets.on('connection', function(socket){
+//     function log(){
+//         var array = [">>> "];
+//         for (var i = 0; i < arguments.length; i++) {
+//             array.push(arguments[i]);
+//         }
+//         socket.emit('log', array);
+//     }
+
+//     socket.on('create or join', function (room) {
+//         log('Request to create or join room', room);
+//     });
+// });
